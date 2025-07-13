@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Investor Pro Dashboard</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap">
+    <link rel="stylesheet" href="footer.css">
+    <link rel="stylesheet" href="pro.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header class="topbar">
+        <h1>InWiseNext</h1>
+        <a href="login.html" class="logout-btn">Logout</a> <!-- Added # link -->
+    </header>
+    
+    <div class="dashboard">
+        <nav class="sidebar">
+            <h2>Investor Pro</h2>
+            <ul>
+                <li><a href="#">Home</a></li>
+                <li><a href="#">News</a></li>
+                <li><a href="#">Stocks</a></li>
+                <li><a href="#">Watchlist</a></li>
+                <li><a href="#">Graphs</a></li>
+                <li><a href="#">Retirement Planning</a></li>
+                <li><a href="#">ROI Calculator</a></li>
+                <li><a href="#">About us</a></li>
+            </ul>
+        </nav>
+
+        <div class="main-content">
+            <header>
+                <h1>Market Insights</h1>
+            </header>
+
+            <section class="charts">
+                <div class="chart-container">
+                    <h2>Top Companies by Market Cap</h2>
+                    <canvas id="marketCapChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h2>Top Companies by Revenue Growth</h2>
+                    <canvas id="revenueGrowthChart"></canvas>
+                </div>
+            </section>
+
+            <section class="charts">
+                <div class="chart-container">
+                    <h2>Company Performance Trends</h2>
+                    <canvas id="performanceTrendsChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h2>Sector Performance</h2>
+                    <canvas id="sectorPerformanceChart"></canvas>
+                </div>
+            </section>
+        </div>
+    </div>
+    <footer>
+        <div class="footer-content">
+          <p>© 2024 InWiseNext | All Rights Reserved</p>
+          <div class="social-icons">
+            <a href="https://www.facebook.com/" aria-label="Facebook" target="_blank">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+            <a href="https://x.com/home?lang=en" aria-label="Twitter" target="_blank">
+              <i class="fab fa-twitter"></i>
+            </a>
+            <a href="https://www.linkedin.com/feed/" aria-label="LinkedIn" target="_blank">
+              <i class="fab fa-linkedin-in"></i>
+            </a>
+            <a href="https://www.instagram.com/milo_scx/" aria-label="Instagram" target="_blank">
+              <i class="fab fa-instagram"></i>
+            </a>
+          </div>
+        </div>
+      </footer>
+    <script>
+        const marketCapData = {
+            labels: ["Apple", "Nvidia", "Microsoft", "Alphabet", "Amazon"],
+            datasets: [
+                {
+                    label: "Market Cap (in Trillion $)",
+                    data: [3.68, 3.54, 3.15, 2.36, 2.36],
+                    backgroundColor: "rgba(26, 188, 156, 0.8)", // Teal
+                    borderColor: "rgba(26, 188, 156, 1)",
+                    borderWidth: 1,
+                },
+            ],
+        };
+
+        const revenueGrowthData = {
+            labels: ["Apple", "Nvidia", "Microsoft", "Alphabet", "Amazon"],
+            datasets: [
+                {
+                    label: "Revenue Growth (%)",
+                    data: [15, 12, 10, 8, 7],
+                    backgroundColor: "rgba(46, 204, 113, 0.8)", // Light green
+                    borderColor: "rgba(46, 204, 113, 1)",
+                    borderWidth: 1,
+                },
+            ],
+        };
+
+        const performanceTrendsData = {
+            labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+            datasets: [
+                {
+                    label: "Company A Performance ($)",
+                    data: [50, 55, 53, 60, 65, 70],
+                    backgroundColor: "rgba(52, 152, 219, 0.3)", // Light blue fill
+                    borderColor: "rgba(52, 152, 219, 1)",
+                    borderWidth: 2,
+                    tension: 0.4,
+                    hoverBackgroundColor: "rgba(52, 152, 219, 0.5)", // Lighter blue for hover
+                    hoverBorderColor: "rgba(52, 152, 219, 1)", // Darker border color on hover
+                    hoverBorderWidth: 3, // Increased border width on hover
+                },
+            ],
+        };
+
+        const sectorPerformanceData = {
+            labels: ["Technology", "Finance", "Healthcare", "Consumer Goods", "Energy", "Utilities"],
+            datasets: [
+                {
+                    label: "Sector Performance (%)",
+                    data: [20, 15, 10, 18, 12, 25], // Example data for sector performance
+                    backgroundColor: [
+                        "rgba(52, 152, 219, 0.8)",  // Muted Blue (Technology)
+                        "rgba(41, 128, 185, 0.8)",  // Deep Blue (Finance)
+                        "rgba(26, 188, 156, 0.8)",  // Teal (Healthcare)
+                        "rgba(0, 127, 255, 0.8)",   // Blue (Consumer Goods)
+                        "rgba(34, 139, 34, 0.8)",   // Green (Energy)
+                        "rgba(80, 200, 120, 0.8)",  // Light Green (Utilities)
+                    ],
+                    borderColor: [
+                        "#D3D3D3",
+                        "#D3D3D3",
+                        "#D3D3D3",
+                        "#D3D3D3",
+                        "#D3D3D3",
+                        "#D3D3D3",
+                    ],
+                    borderWidth: 1,
+                },
+            ],
+        };
+
+        function renderChart(chartId, chartType, chartData) {
+            const ctx = document.getElementById(chartId).getContext("2d");
+            new Chart(ctx, {
+                type: chartType,
+                data: chartData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(tooltipItem) {
+                                    return tooltipItem.label + ': ' + tooltipItem.raw + (chartType === 'pie' ? '%' : '$'); // Show value with appropriate unit
+                                },
+                            },
+                        },
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                font: {
+                                    size: 14,
+                                    weight: 'bold',
+                                },
+                            },
+                        },
+                    },
+                    cutoutPercentage: chartType === 'pie' ? 50 : undefined, // Only apply to pie chart
+                    animation: {
+                        animateScale: true,
+                        animateRotate: true,
+                    },
+                    hover: {
+                        mode: 'nearest',
+                        intersect: true,
+                    },
+                    scales: chartType !== 'pie' ? {
+                        x: {
+                            grid: {
+                                display: true, // Display x-axis grid lines
+                                color: 'rgba(255, 255, 255, 0.1)', // Lighter grid color
+                            },
+                        },
+                        y: {
+                            grid: {
+                                display: true, // Display y-axis grid lines
+                                color: 'rgba(255, 255, 255, 0.1)', // Lighter grid color
+                            },
+                        },
+                    } : {}, // Disable grid lines for pie chart
+                },
+            });
+        }
+
+        renderChart("marketCapChart", "bar", marketCapData);
+        renderChart("revenueGrowthChart", "bar", revenueGrowthData);
+        renderChart("performanceTrendsChart", "line", performanceTrendsData);
+        renderChart("sectorPerformanceChart", "pie", sectorPerformanceData);
+    </script>
+</body>
+</html>
